@@ -11,30 +11,15 @@
   </head>
   <body>
     <a class="skip-link" href="#results">Vai ai risultati</a>
-    <header class="site-header">
-      <div class="shell header-row">
-        <a class="brand" href="/" aria-label="Aule libere Bocconi, home">
-          <span class="brand-mark" aria-hidden="true">B</span>
-          <span data-i18n="brand">Aule libere</span>
-        </a>
-        <button class="language-button" id="languageButton" type="button" aria-label="Switch to English">EN</button>
-      </div>
-    </header>
-
     <main>
       <section class="hero">
+        <div class="shell language-row">
+          <button class="language-button" id="languageButton" type="button" data-i18n="switchLanguage" aria-label="Switch to English">Switch to English</button>
+        </div>
         <div class="shell hero-grid">
           <div>
-            <p class="eyebrow" data-i18n="eyebrow">Campus Bocconi · Milano</p>
             <h1 data-i18n="title">Trova subito un’aula in cui studiare.</h1>
-            <p class="hero-copy" data-i18n="intro">Aule studio ufficiali e aule senza attività programmate, in un’unica ricerca.</p>
-          </div>
-          <div class="hero-status" aria-live="polite">
-            <span class="status-dot"></span>
-            <div>
-              <strong id="heroStatus" data-i18n="loading">Caricamento orari…</strong>
-              <span id="updatedAt"></span>
-            </div>
+            <p class="hero-copy" data-i18n="intro">Aule marcate come &quot;Aule studio&quot; dalla Bocconi e aule senza attività programmate</p>
           </div>
         </div>
       </section>
@@ -89,8 +74,8 @@
             <label for="buildingFilter" data-i18n="building">Edificio</label>
             <select id="buildingFilter">
               <option value="" data-i18n="allBuildings">Tutti gli edifici</option>
-              <option value="sarfatti-25">Sarfatti 25</option>
-              <option value="sraffa-13">Sraffa 13</option>
+              <option value="sarfatti-25">Sarfatti 25 (Leoni)</option>
+              <option value="sraffa-13">Sraffa 13 (Velodromo)</option>
             </select>
           </div>
           <div class="field">
@@ -101,7 +86,7 @@
           </div>
 
           <div class="legend">
-            <span><i class="legend-dot official"></i><span data-i18n="officialLegend">Aula studio ufficiale</span></span>
+            <span><i class="legend-dot official"></i><span data-i18n="officialLegend">Aula studio</span></span>
             <span><i class="legend-dot free"></i><span data-i18n="freeLegend">Aula libera</span></span>
           </div>
         </aside>
@@ -136,7 +121,7 @@
 
     <footer class="site-footer">
       <div class="shell footer-grid">
-        <p data-i18n="disclaimer">Servizio informativo indipendente. La disponibilità non garantisce l’accesso effettivo: verifica sempre le indicazioni in sede.</p>
+        <p data-i18n="disclaimer">Servizio informativo indipendente, realizzato a scopo ricreativo. Non intende in alcun modo sostituirsi ai canali ufficiali forniti dall'Università Commerciale Luigi Bocconi</p>
         <a href="https://didattica.unibocconi.it/aule/lista_orario.php" target="_blank" rel="noreferrer" data-i18n="officialSource">Orari ufficiali Bocconi ↗</a>
       </div>
     </footer>

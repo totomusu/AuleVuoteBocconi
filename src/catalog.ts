@@ -2,12 +2,12 @@ import type { BuildingId, OpeningHours, RoomDefinition } from "./types";
 
 export const BUILDINGS = {
   "sarfatti-25": {
-    name: "Sarfatti 25",
+    name: "Sarfatti 25 (Leoni)",
     weekday: { start: "08:00", end: "21:00" },
     saturday: { start: "08:00", end: "18:00" },
   },
   "sraffa-13": {
-    name: "Sraffa 13",
+    name: "Sraffa 13 (Velodromo)",
     weekday: { start: "08:30", end: "20:30" },
     saturday: null,
   },

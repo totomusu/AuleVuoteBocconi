@@ -2,14 +2,9 @@ import { findAvailableRooms } from "/availability.js";
 
 const translations = {
   it: {
-    brand: "Aule libere",
-    eyebrow: "Campus Bocconi · Milano",
+    switchLanguage: "Switch to English",
     title: "Trova subito un’aula in cui studiare.",
-    intro: "Aule studio ufficiali e aule senza attività programmate, in un’unica ricerca.",
-    loading: "Caricamento orari…",
-    ready: "Orari disponibili",
-    staleStatus: "Dati da verificare",
-    updated: "Aggiornati {time}",
+    intro: "Aule marcate come \"Aule studio\" dalla Bocconi e aule senza attività programmate",
     searchLabel: "La tua ricerca",
     whenTitle: "Quando vuoi studiare?",
     refresh: "Ricarica dati",
@@ -26,7 +21,7 @@ const translations = {
     allBuildings: "Tutti gli edifici",
     floor: "Piano",
     allFloors: "Tutti i piani",
-    officialLegend: "Aula studio ufficiale",
+    officialLegend: "Aula studio",
     freeLegend: "Aula libera",
     availableNow: "Disponibili adesso",
     availableRange: "Disponibili dalle {start} alle {end}",
@@ -37,13 +32,13 @@ const translations = {
     retry: "Riprova",
     emptyTitle: "Nessuna aula corrisponde alla ricerca.",
     emptyCopy: "Prova a cambiare fascia oraria o a rimuovere un filtro.",
-    disclaimer: "Servizio informativo indipendente. La disponibilità non garantisce l’accesso effettivo: verifica sempre le indicazioni in sede.",
+    disclaimer: "Servizio informativo indipendente, realizzato a scopo ricreativo. Non intende in alcun modo sostituirsi ai canali ufficiali forniti dall'Università Commerciale Luigi Bocconi",
     officialSource: "Orari ufficiali Bocconi ↗",
     staleNotice: "Gli ultimi dati disponibili non sono recenti. Le informazioni potrebbero essere cambiate.",
     dateMismatch: "Gli orari disponibili si riferiscono al {date}, non a oggi.",
     invalidRange: "L’orario finale deve essere successivo a quello iniziale.",
-    officialBadge: "Studio ufficiale",
-    freeBadge: "Libera",
+    officialBadge: "Aula studio",
+    freeBadge: "Aula libera",
     freeNow: "Libera ora",
     freeRange: "Libera nella fascia scelta",
     until: "fino alle {time}",
@@ -53,7 +48,7 @@ const translations = {
     noNextBusy: "Nessun’altra attività prevista",
     daySchedule: "Programma di oggi",
     noActivities: "Nessuna attività programmata",
-    officialSlot: "Aula studio ufficiale",
+    officialSlot: "Aula studio",
     busySlot: "Occupata",
     minutes: "{count} min",
     hours: "{hours} h",
@@ -64,14 +59,9 @@ const translations = {
     unknownFloor: "Piano non indicato",
   },
   en: {
-    brand: "Available rooms",
-    eyebrow: "Bocconi Campus · Milan",
+    switchLanguage: "Passa a italiano",
     title: "Find a room to study in right now.",
-    intro: "Official study rooms and classrooms without scheduled activities, in one search.",
-    loading: "Loading schedule…",
-    ready: "Schedule available",
-    staleStatus: "Data needs checking",
-    updated: "Updated {time}",
+    intro: "Rooms marked by Bocconi as \"Aule studio\" and classrooms without scheduled activities",
     searchLabel: "Your search",
     whenTitle: "When do you want to study?",
     refresh: "Refresh data",
@@ -88,7 +78,7 @@ const translations = {
     allBuildings: "All buildings",
     floor: "Floor",
     allFloors: "All floors",
-    officialLegend: "Official study room",
+    officialLegend: "Study room",
     freeLegend: "Available classroom",
     availableNow: "Available now",
     availableRange: "Available from {start} to {end}",
@@ -99,13 +89,13 @@ const translations = {
     retry: "Try again",
     emptyTitle: "No rooms match your search.",
     emptyCopy: "Try a different time range or remove a filter.",
-    disclaimer: "Independent informational service. Availability does not guarantee access: always check on-site information.",
+    disclaimer: "Independent informational service, created for recreational purposes. It does not replace the official channels provided by Università Commerciale Luigi Bocconi.",
     officialSource: "Official Bocconi schedule ↗",
     staleNotice: "The latest available data is not recent. Information may have changed.",
     dateMismatch: "The available schedule is for {date}, not today.",
     invalidRange: "The end time must be later than the start time.",
-    officialBadge: "Official study",
-    freeBadge: "Available",
+    officialBadge: "Study room",
+    freeBadge: "Available room",
     freeNow: "Available now",
     freeRange: "Available for the selected range",
     until: "until {time}",
@@ -115,7 +105,7 @@ const translations = {
     noNextBusy: "No more activities scheduled",
     daySchedule: "Today’s schedule",
     noActivities: "No scheduled activities",
-    officialSlot: "Official study room",
+    officialSlot: "Study room",
     busySlot: "Occupied",
     minutes: "{count} min",
     hours: "{hours} hr",
@@ -140,8 +130,6 @@ const elements = {
   roomSearch: document.querySelector("#roomSearch"),
   buildingFilter: document.querySelector("#buildingFilter"),
   floorFilter: document.querySelector("#floorFilter"),
-  heroStatus: document.querySelector("#heroStatus"),
-  updatedAt: document.querySelector("#updatedAt"),
   querySummary: document.querySelector("#querySummary"),
   resultCount: document.querySelector("#resultCount"),
   scheduleDate: document.querySelector("#scheduleDate"),
@@ -201,14 +189,6 @@ function formatDate(value) {
   }).format(new Date(`${value}T12:00:00Z`));
 }
 
-function formatUpdateTime(value) {
-  return new Intl.DateTimeFormat(state.language === "it" ? "it-IT" : "en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Rome",
-  }).format(new Date(value));
-}
-
 function formatDuration(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
@@ -237,11 +217,8 @@ function applyTranslations() {
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
     element.setAttribute("placeholder", t(element.dataset.i18nPlaceholder));
   });
-  elements.languageButton.textContent = state.language === "it" ? "EN" : "IT";
-  elements.languageButton.setAttribute(
-    "aria-label",
-    state.language === "it" ? "Switch to English" : "Passa all’italiano",
-  );
+  elements.languageButton.textContent = t("switchLanguage");
+  elements.languageButton.setAttribute("aria-label", t("switchLanguage"));
 }
 
 function currentQuery() {
@@ -371,12 +348,10 @@ function render() {
 
   if (state.loading) {
     elements.resultCount.textContent = "—";
-    elements.heroStatus.textContent = t("loading");
     return;
   }
   if (state.error || !schedule) {
     elements.resultCount.textContent = "0";
-    elements.heroStatus.textContent = t("errorTitle");
     elements.errorMessage.textContent = state.error || t("errorFallback");
     return;
   }
@@ -396,8 +371,6 @@ function render() {
     elements.notice.hidden = false;
   }
 
-  elements.heroStatus.textContent = schedule.status === "fresh" ? t("ready") : t("staleStatus");
-  elements.updatedAt.textContent = t("updated", { time: formatUpdateTime(schedule.generatedAt) });
   elements.scheduleDate.textContent = t("scheduleDate", { date: formatDate(schedule.scheduleDate) });
   elements.querySummary.textContent = state.mode === "now"
     ? t("availableNow")

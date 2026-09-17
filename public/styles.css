@@ -64,39 +64,6 @@ a { color: inherit; }
 
 .skip-link:focus { transform: translateY(0); }
 
-.site-header {
-  background: var(--ink);
-  color: white;
-}
-
-.header-row {
-  min-height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.brand {
-  display: inline-flex;
-  gap: 11px;
-  align-items: center;
-  color: white;
-  font-weight: 750;
-  letter-spacing: -.01em;
-  text-decoration: none;
-}
-
-.brand-mark {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 50%;
-  font-family: Georgia, serif;
-  font-size: 1.25rem;
-}
-
 .language-button,
 .icon-button {
   min-width: 42px;
@@ -113,14 +80,20 @@ a { color: inherit; }
 
 .hero {
   overflow: hidden;
-  padding: 54px 0 76px;
+  padding: 18px 0 76px;
   background:
     radial-gradient(circle at 85% 10%, rgb(89 159 210 / 25%), transparent 28%),
     linear-gradient(135deg, #101d42 0%, #153d70 100%);
   color: white;
 }
 
-.hero-grid { display: grid; gap: 32px; }
+.language-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 38px;
+}
+
+.hero-grid { display: grid; }
 
 .eyebrow,
 .step-label {
@@ -152,37 +125,6 @@ h1 {
   margin-bottom: 0;
   color: #dce9f5;
   font-size: clamp(1rem, 2.5vw, 1.22rem);
-}
-
-.hero-status {
-  align-self: end;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 16px 18px;
-  border: 1px solid rgb(255 255 255 / 18%);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 8%);
-  backdrop-filter: blur(8px);
-}
-
-.hero-status strong,
-.hero-status span { display: block; }
-
-.hero-status #updatedAt {
-  margin-top: 2px;
-  color: #c7d8e8;
-  font-size: .86rem;
-}
-
-.status-dot {
-  flex: 0 0 auto;
-  width: 9px;
-  height: 9px;
-  margin-top: 7px;
-  border-radius: 50%;
-  background: #7be1b9;
-  box-shadow: 0 0 0 5px rgb(123 225 185 / 13%);
 }
 
 .app-layout {
@@ -522,7 +464,6 @@ summary:focus-visible {
 
 @media (min-width: 720px) {
   .shell { width: min(1180px, calc(100% - 56px)); }
-  .hero-grid { grid-template-columns: minmax(0, 1fr) 300px; align-items: end; }
   .app-layout { grid-template-columns: 300px minmax(0, 1fr); align-items: start; }
   .search-panel { position: sticky; top: 18px; }
   .results-panel { padding: 28px; }

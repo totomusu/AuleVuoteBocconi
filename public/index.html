@@ -1,212 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
+  <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aule Vuote Bocconi</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,600;1,600&display=swap');
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        h1{
-            font-family: 'Bodoni Moda', serif;
-            font-weight: 600; /* Semibold */
-            color: #003366;
-            font-size: 3rem;
-        }
-        h1, h2 {
-            color: #003366;
-        }
-        .aula {
-            margin-bottom: 30px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .slot-libero {
-            background-color: #d4edda;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 3px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .info {
-            color: #666;
-            font-style: italic;
-            margin-bottom: 15px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #errorMsg {
-            color: red;
-            margin-top: 10px;
-            display: none;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="time"] {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 100px;
-        }
-        #results {
-            display: none;
-        }
-        #refreshBtn {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        #refreshBtn:hover {
-            background-color: #2980b9;
-        }
-        .search-filter-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101d42">
+    <meta name="description" content="Trova le aule disponibili per studiare nel campus Bocconi.">
+    <title>Aule libere Bocconi</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#results">Vai ai risultati</a>
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="/" aria-label="Aule libere Bocconi, home">
+          <span class="brand-mark" aria-hidden="true">B</span>
+          <span data-i18n="brand">Aule libere</span>
+        </a>
+        <button class="language-button" id="languageButton" type="button" aria-label="Switch to English">EN</button>
+      </div>
+    </header>
 
-        .search-field, .filter-field {
-            flex-grow: 1;
-            width: 48%;
-        }
+    <main>
+      <section class="hero">
+        <div class="shell hero-grid">
+          <div>
+            <p class="eyebrow" data-i18n="eyebrow">Campus Bocconi · Milano</p>
+            <h1 data-i18n="title">Trova subito un’aula in cui studiare.</h1>
+            <p class="hero-copy" data-i18n="intro">Aule studio ufficiali e aule senza attività programmate, in un’unica ricerca.</p>
+          </div>
+          <div class="hero-status" aria-live="polite">
+            <span class="status-dot"></span>
+            <div>
+              <strong id="heroStatus" data-i18n="loading">Caricamento orari…</strong>
+              <span id="updatedAt"></span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        .search-field input, .filter-field input, .filter-field select {
-            width: 80%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .language-selector {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        }
-        .language-btn {
-            background: none;
-            border: 1px solid #003366;
-            color: #003366;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .language-btn:hover {
-            background-color: #003366;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="language-selector">
-        <button class="language-btn" onclick="toggleLanguage()">🇬🇧 English</button>
-    </div>
-    <h1>
-    Aule Vuote Bocconi</h1>
-    <p>Questo strumento analizza le aule vuote nell'Università Bocconi che non sono classificate come "aule studio" sul sito ufficiale (<a href="https://didattica.unibocconi.it/aule/lista_orario.php" target="_blank">didattica.unibocconi.it</a>). Si prega di notare che:</p>
-    <ul>
-        <li>La disponibilità indicata non garantisce l'effettiva accessibilità delle aule</li>
-        <li>Questo servizio è puramente informativo e non intende sostituire le risorse ufficiali</li>
-        <li>L'Università Bocconi non è responsabile per le informazioni qui riportate</li>
-    </ul>    
-    <div class="input-group search-filter-row">
-        <div class="search-field">
-            <label for="startTime">Cerca dalle:</label>
-            <input type="time" id="startTime" value="08:30">
-        </div>
-        
-        <div class="filter-field">
-            <label for="endTime">Alle:</label>
-            <input type="time" id="endTime" value="19:45">
-        </div>
-    </div>
+      <div class="shell app-layout">
+        <aside class="search-panel" aria-labelledby="searchTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="step-label" data-i18n="searchLabel">La tua ricerca</p>
+              <h2 id="searchTitle" data-i18n="whenTitle">Quando vuoi studiare?</h2>
+            </div>
+            <button class="icon-button" id="refreshButton" type="button" data-i18n-aria="refresh" aria-label="Ricarica dati">
+              <span aria-hidden="true">↻</span>
+            </button>
+          </div>
 
-    <div class="input-group search-filter-row">
-        <div class="search-field">
-            <label for="searchAula">Cerca Aula:</label>
-            <input type="text" id="searchAula" placeholder="Inserisci il nome dell'aula...">
-        </div>
-        
-        <div class="filter-field">
-            <label for="filterEdificio">Filtra per edificio:</label>
-            <select id="filterEdificio">
-                <option value="">Tutti gli edifici</option>
-                <option value="sarfatti 25">Leoni (Sarfatti 25)</option>
-                <option value="sraffa 13">Velodromo (Sraffa 13)</option>
+          <div class="segmented" role="group" aria-label="Modalità di ricerca" data-i18n-aria="modeLabel">
+            <button class="segment is-active" type="button" data-mode="now" aria-pressed="true" data-i18n="now">Adesso</button>
+            <button class="segment" type="button" data-mode="range" aria-pressed="false" data-i18n="range">Scegli una fascia</button>
+          </div>
+
+          <div id="nowControls" class="field">
+            <label for="minimumDuration" data-i18n="minimumDuration">Tempo minimo</label>
+            <select id="minimumDuration">
+              <option value="0" data-i18n="anyDuration">Qualsiasi durata</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+              <option value="60">1 h</option>
+              <option value="90">1 h 30</option>
+              <option value="120">2 h</option>
             </select>
-        </div>
-    </div>
-    
-    <button id="refreshBtn">Aggiorna Dati</button>
-    <p id="errorMsg"></p>
-    
-    <div class="loading">
-        <div class="spinner"></div>
-        <p>Analisi in corso...</p>
-    </div>
-    
-    <div id="results">
-        <h2>Risultati dell'Analisi</h2>
-        <p id="dataInfo" class="info"></p>
-        
-        <div id="auleContainer"></div>
-        
-       
-    </div>
-    <script src="translation.js"> </script>
-    <script src="script.obfuscated.js"></script>
-</body>
+          </div>
+
+          <div id="rangeControls" class="range-fields" hidden>
+            <div class="field">
+              <label for="startTime" data-i18n="from">Dalle</label>
+              <input id="startTime" type="time" step="300">
+            </div>
+            <div class="field">
+              <label for="endTime" data-i18n="to">Alle</label>
+              <input id="endTime" type="time" step="300">
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="field">
+            <label for="roomSearch" data-i18n="roomSearch">Cerca un’aula</label>
+            <input id="roomSearch" type="search" autocomplete="off" data-i18n-placeholder="roomPlaceholder" placeholder="Es. N24 o Aula 14">
+          </div>
+          <div class="field">
+            <label for="buildingFilter" data-i18n="building">Edificio</label>
+            <select id="buildingFilter">
+              <option value="" data-i18n="allBuildings">Tutti gli edifici</option>
+              <option value="sarfatti-25">Sarfatti 25</option>
+              <option value="sraffa-13">Sraffa 13</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="floorFilter" data-i18n="floor">Piano</label>
+            <select id="floorFilter">
+              <option value="" data-i18n="allFloors">Tutti i piani</option>
+            </select>
+          </div>
+
+          <div class="legend">
+            <span><i class="legend-dot official"></i><span data-i18n="officialLegend">Aula studio ufficiale</span></span>
+            <span><i class="legend-dot free"></i><span data-i18n="freeLegend">Aula libera</span></span>
+          </div>
+        </aside>
+
+        <section class="results-panel" id="results" aria-labelledby="resultsTitle" tabindex="-1">
+          <div id="notice" class="notice" role="status" hidden></div>
+          <div class="results-heading">
+            <div>
+              <p class="step-label" id="querySummary" data-i18n="availableNow">Disponibili adesso</p>
+              <h2 id="resultsTitle"><span id="resultCount">—</span> <span data-i18n="roomsFound">aule trovate</span></h2>
+            </div>
+            <p id="scheduleDate" class="schedule-date"></p>
+          </div>
+
+          <div id="loadingState" class="state-card" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <p data-i18n="loadingRooms">Cerco le aule disponibili…</p>
+          </div>
+          <div id="errorState" class="state-card error-state" hidden>
+            <strong data-i18n="errorTitle">Non riesco a recuperare gli orari.</strong>
+            <p id="errorMessage"></p>
+            <button class="primary-button" id="retryButton" type="button" data-i18n="retry">Riprova</button>
+          </div>
+          <div id="emptyState" class="state-card" hidden>
+            <strong data-i18n="emptyTitle">Nessuna aula corrisponde alla ricerca.</strong>
+            <p data-i18n="emptyCopy">Prova a cambiare fascia oraria o a rimuovere un filtro.</p>
+          </div>
+          <div id="roomGrid" class="room-grid"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <p data-i18n="disclaimer">Servizio informativo indipendente. La disponibilità non garantisce l’accesso effettivo: verifica sempre le indicazioni in sede.</p>
+        <a href="https://didattica.unibocconi.it/aule/lista_orario.php" target="_blank" rel="noreferrer" data-i18n="officialSource">Orari ufficiali Bocconi ↗</a>
+      </div>
+    </footer>
+    <script type="module" src="/app.js"></script>
+  </body>
 </html>

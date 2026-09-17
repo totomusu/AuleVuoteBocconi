@@ -1,6 +1,24 @@
 {
-  "dependencies": {
-    "axios": "^1.9.0",
-    "cheerio": "^1.0.0"
+  "name": "aule-vuote-bocconi",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Trova aule disponibili per studiare nel campus Bocconi.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test",
+    "deploy": "wrangler deploy",
+    "deploy:dry": "wrangler deploy --dry-run"
+  },
+  "engines": { "node": ">=20" },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.0.0",
+    "@cloudflare/workers-types": "^5.20260917.1",
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.133.0"
   }
 }

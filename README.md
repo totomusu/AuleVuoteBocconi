@@ -1,79 +1,92 @@
-# 📚 AuleVuoteBocconi
+# Aule libere Bocconi
 
+Applicazione indipendente per trovare le aule in cui studiare nel campus Bocconi. Riunisce le **aule studio ufficiali** e le normali aule senza attività programmate negli edifici di via Sarfatti 25 e piazza Sraffa 13.
 
+## Come funziona
 
-*AuleVuoteBocconi* is a tool that helps you find empty classrooms at Bocconi University that are not marked as **official study rooms** in the website https://didattica.unibocconi.it/aule/lista_orario.php. It analyzes the lecture schedule from the official Bocconi website and shows available rooms in real time.
+- Un Cloudflare Worker legge l'[orario ufficiale Bocconi](https://didattica.unibocconi.it/aule/lista_orario.php) ogni 30 minuti.
+- `HTMLRewriter` normalizza attività e assegnazioni senza dipendenze di scraping Node.
+- L'ultimo risultato valido viene conservato in Workers KV. Un errore temporaneo non sovrascrive la cache.
+- `GET /api/schedule` espone catalogo, orari di apertura e intervalli `official-study`/`busy`.
+- Il frontend statico calcola e filtra localmente le disponibilità, senza ulteriori richieste.
 
----
+Il catalogo di base deriva dalla [pagina ufficiale degli edifici](https://www.unibocconi.it/it/campus/edifici-e-aule/edifici). Le nuove aule trovate nell'orario vengono aggiunte automaticamente alla risposta del giorno.
 
-## ✅ Requirements
+## Sviluppo locale
 
-- [Node.js](https://nodejs.org/) installed on your machine
-- The following npm packages:
-
-```bash
-npm install axios cheerio
-```
-
----
-
-## 🚀 Getting Started
-
-1. Clone or download the project.
-2. Run the following script to fetch the current day’s class schedule:
+Richiede Node.js 20 o successivo.
 
 ```bash
-node fetch_orario.js
+npm install
+npm run dev
 ```
 
-This script will retrieve the latest classroom schedule from Bocconi's official website and store it in:
-
-```
-/public/cache_orario.json
-```
-
----
-
-## 🔁 Automatic Updates (Optional)
-
-To keep your schedule data always up to date, you can automate the script using `cron` to run every 30 minutes.
-
-1. Open your crontab editor:
+Wrangler avvia frontend, API e un KV locale. Per simulare il cron:
 
 ```bash
-crontab -e
+curl "http://localhost:8787/cdn-cgi/handler/scheduled"
 ```
 
-2. Add the following line at the end of the file (update the path if needed):
+Controlli disponibili:
 
 ```bash
-*/30 * * * * /usr/local/bin/node /absolute/path/to/fetch_orario.js >> /absolute/path/to/orario.log 2>&1
+npm test
+npm run typecheck
+npm run deploy:dry
 ```
 
-3. Save and exit using `CTRL+X`, then confirm with `Y` and `ENTER`.
+I test usano il runtime Workers tramite `@cloudflare/vitest-plugin` e coprono parser, intervalli sovrapposti, priorità delle aule studio, cache vuota e fallimenti upstream.
 
----
+## Primo deploy gratuito
 
-## 🌐 Viewing the Schedule
+1. Autorizzare Wrangler:
 
-Once the `cache_orario.json` file is updated, simply open `index.html` with a Web Server, like the one in VS Code or Apache2 or Nginx.
+   ```bash
+   npx wrangler login --device
+   ```
 
-You’ll see a list of all currently free classrooms in the university where you can study peacefully—without needing to go to a crowded study room.
+2. Creare il namespace KV:
 
----
+   ```bash
+   npx wrangler kv namespace create SCHEDULE_CACHE
+   ```
 
-## 📄 License
+3. Sostituire l'ID provvisorio in `wrangler.jsonc` con quello restituito dal comando.
+4. Distribuire:
 
-This project is open-source. Feel free to modify or improve it!
+   ```bash
+   npm run deploy
+   ```
 
+5. Distribuire il Worker crea e gestisce anche il Custom Domain
+   `aulebocconi.salvatoremusumeci.com`, già dichiarato in `wrangler.jsonc`.
+   La zona `salvatoremusumeci.com` deve essere attiva nello stesso account
+   Cloudflare: non serve creare a mano un record DNS.
 
+Il progetto usa un Worker, un namespace KV e un Cron Trigger. Con un aggiornamento ogni 30 minuti consuma circa 48 esecuzioni e 48 scritture KV al giorno, molto meno dei limiti del piano Free. I file statici sono serviti gratuitamente. Non è necessario attivare Workers Paid.
 
+## Deploy automatici
 
+In Cloudflare, aprire **Workers & Pages → aule-vuote-bocconi → Settings → Builds**, collegare `totomusu/AuleVuoteBocconi` e scegliere `main` come branch di produzione. Il comando di deploy predefinito `npx wrangler deploy` utilizza la configurazione nel repository.
 
+## Aggiornamento del catalogo
 
+Il catalogo versionato si trova in `src/catalog.ts`. Quando Bocconi modifica l'elenco ufficiale:
 
+1. aggiornare nomi e piani nel catalogo;
+2. aggiungere o aggiornare i test del parser;
+3. eseguire `npm run check` prima del push.
 
+## Affidabilità e privacy
 
+- Le attività occupate prevalgono sempre su eventuali intervalli “Aule studio” sovrapposti.
+- Se i dati hanno più di 45 minuti, l'interfaccia mostra un avviso.
+- Se il recupero fallisce, resta disponibile l'ultima copia valida; senza cache l'API risponde `503`.
+- Nomi dei docenti e altri dati non necessari non vengono salvati né restituiti.
+- Non sono presenti analytics, cookie applicativi o risorse esterne.
 
+La disponibilità indicata non garantisce l'effettiva accessibilità delle aule e non sostituisce le comunicazioni dell'Università Bocconi.
 
+## Licenza
 
+MIT

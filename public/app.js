@@ -3,11 +3,9 @@ import { findAvailableRooms } from "/availability.js";
 const translations = {
   it: {
     switchLanguage: "Switch to English",
-    title: "Trova subito un’aula in cui studiare.",
+    title: "Trova subito un'aula vuota",
     intro: "Aule marcate come \"Aule studio\" dalla Bocconi e aule senza attività programmate",
-    searchLabel: "La tua ricerca",
-    whenTitle: "Quando vuoi studiare?",
-    refresh: "Ricarica dati",
+    searchLabel: "Cerca",
     modeLabel: "Modalità di ricerca",
     now: "Adesso",
     range: "Scegli una fascia",
@@ -60,11 +58,9 @@ const translations = {
   },
   en: {
     switchLanguage: "Passa a italiano",
-    title: "Find a room to study in right now.",
+    title: "Find an empty room now",
     intro: "Rooms marked by Bocconi as \"Aule studio\" and classrooms without scheduled activities",
-    searchLabel: "Your search",
-    whenTitle: "When do you want to study?",
-    refresh: "Refresh data",
+    searchLabel: "Search",
     modeLabel: "Search mode",
     now: "Now",
     range: "Choose a time range",
@@ -119,7 +115,6 @@ const translations = {
 
 const elements = {
   languageButton: document.querySelector("#languageButton"),
-  refreshButton: document.querySelector("#refreshButton"),
   retryButton: document.querySelector("#retryButton"),
   modeButtons: [...document.querySelectorAll("[data-mode]")],
   nowControls: document.querySelector("#nowControls"),
@@ -391,7 +386,6 @@ function render() {
 async function loadSchedule() {
   state.loading = true;
   state.error = null;
-  elements.refreshButton.classList.add("is-loading");
   render();
   try {
     const response = await fetch(`/api/schedule?ts=${Date.now()}`, {
@@ -405,7 +399,6 @@ async function loadSchedule() {
     state.error = error instanceof Error ? error.message : t("errorFallback");
   } finally {
     state.loading = false;
-    elements.refreshButton.classList.remove("is-loading");
     render();
   }
 }
@@ -430,7 +423,6 @@ elements.languageButton.addEventListener("click", () => {
   render();
 });
 elements.modeButtons.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
-elements.refreshButton.addEventListener("click", loadSchedule);
 elements.retryButton.addEventListener("click", loadSchedule);
 elements.buildingFilter.addEventListener("change", () => {
   elements.floorFilter.value = "";
